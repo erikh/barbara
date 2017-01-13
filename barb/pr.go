@@ -33,7 +33,10 @@ func replyPR(ctx *cli.Context) {
 	}
 
 	args := ctx.Args()
-	myRepo := repo(args[0])
+	myRepo, err := repo()
+	if err != nil {
+		exitError(err)
+	}
 
 	f, err := ioutil.TempFile("", "barbara-edit")
 	if err != nil {
@@ -62,20 +65,23 @@ func replyPR(ctx *cli.Context) {
 func singlePR(ctx *cli.Context) {
 	client := getClient()
 
-	if len(ctx.Args()) != 2 {
+	if len(ctx.Args()) != 1 {
 		exitError(errors.New("invalid arguments"))
 	}
 
 	args := ctx.Args()
 
-	myRepo := repo(args[0])
-
-	pull, err := client.PullRequest(myRepo, args[1], nil)
+	myRepo, err := repo()
 	if err != nil {
 		exitError(err)
 	}
 
-	comments, err := client.Comments(myRepo, args[1], nil)
+	pull, err := client.PullRequest(myRepo, args[0], nil)
+	if err != nil {
+		exitError(err)
+	}
+
+	comments, err := client.Comments(myRepo, args[0], nil)
 	if err != nil {
 		exitError(err)
 	}
@@ -87,6 +93,7 @@ func singlePR(ctx *cli.Context) {
 
 	color.Output = f
 
+	line()
 	color.New(color.FgBlue).Printf("From: %s\n", pull.User.Login)
 	color.New(color.FgBlue).Printf("Title: %s\n", pull.Title)
 	color.New(color.FgBlue).Printf("Number: %d\n", pull.Number)
@@ -105,6 +112,8 @@ func singlePR(ctx *cli.Context) {
 		fmt.Fprintln(f, comment.Body)
 	}
 
+	fmt.Fprintln(f)
+
 	f.Close()
 	defer os.Remove(f.Name())
 
@@ -117,12 +126,10 @@ func listPRs(ctx *cli.Context) {
 	client := getClient()
 	client.WithToken(os.Getenv("GITHUB_TOKEN"))
 
-	if len(ctx.Args()) != 1 {
-		exitError(errors.New("invalid arguments"))
+	myRepo, err := repo()
+	if err != nil {
+		exitError(err)
 	}
-
-	args := ctx.Args()
-	myRepo := repo(args[0])
 
 	pulls, err := getPRs(client, myRepo, ctx.String("state"), ctx.String("direction"), ctx.String("sort-by"))
 	if err != nil {

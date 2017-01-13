@@ -2,8 +2,10 @@ package main
 
 import (
 	"io"
+	"io/ioutil"
 	"os"
 	"os/exec"
+	"regexp"
 	"strings"
 
 	"github.com/crosbymichael/octokat"
@@ -12,9 +14,36 @@ import (
 	"github.com/kr/pty"
 )
 
-func repo(myRepo string) octokat.Repo {
-	parts := strings.SplitN(myRepo, "/", 2)
-	return octokat.Repo{UserName: parts[0], Name: parts[1]}
+var urlRegexp = regexp.MustCompile(`\s*url\s*=\s*(https://|git@)github.com[:/]([^\s]+)`)
+
+func repo() (octokat.Repo, error) {
+	repo := octokat.Repo{}
+	content, err := ioutil.ReadFile(".git/config")
+	if err != nil {
+		return repo, err
+	}
+
+	var origin bool
+
+	for _, line := range strings.Split(string(content), "\n") {
+		if line == `[remote "origin"]` {
+			origin = true
+			continue
+		}
+
+		if origin && urlRegexp.MatchString(line) {
+			match := urlRegexp.FindStringSubmatch(line)
+			if len(match) != 3 {
+				continue
+			}
+
+			parts := strings.Split(match[2], "/")
+
+			return octokat.Repo{Name: parts[1], UserName: parts[0]}, nil
+		}
+	}
+
+	return repo, nil
 }
 
 func line() {
