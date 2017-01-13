@@ -3,15 +3,11 @@ package main
 import (
 	"errors"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"os"
-	"os/exec"
 
 	"github.com/crosbymichael/octokat"
-	"github.com/docker/docker/pkg/term"
 	"github.com/fatih/color"
-	"github.com/kr/pty"
 	"github.com/urfave/cli"
 )
 
@@ -46,37 +42,7 @@ func replyPR(ctx *cli.Context) {
 	f.Close()
 	defer os.Remove(f.Name())
 
-	size, err := term.GetWinsize(0)
-	if err != nil {
-		exitError(err)
-	}
-
-	state, err := term.SetRawTerminal(0)
-	if err != nil {
-		exitError(err)
-	}
-	defer term.RestoreTerminal(0, state)
-
-	cmd := exec.Command(os.Getenv("EDITOR"), f.Name())
-	tty, err := pty.Start(cmd)
-	if err != nil {
-		exitError(err)
-	}
-
-	if err := term.SetWinsize(tty.Fd(), size); err != nil {
-		exitError(err)
-	}
-
-	go io.Copy(tty, os.Stdin)
-	go io.Copy(os.Stdout, tty)
-
-	if err := cmd.Wait(); err != nil {
-		exitError(err)
-	}
-
-	tty.Close()
-
-	if err := term.RestoreTerminal(0, state); err != nil {
+	if err := runProgram(os.Getenv("EDITOR"), f.Name()); err != nil {
 		exitError(err)
 	}
 
@@ -114,22 +80,36 @@ func singlePR(ctx *cli.Context) {
 		exitError(err)
 	}
 
+	f, err := ioutil.TempFile("", "barbara-edit")
+	if err != nil {
+		exitError(err)
+	}
+
+	color.Output = f
+
 	color.New(color.FgBlue).Printf("From: %s\n", pull.User.Login)
 	color.New(color.FgBlue).Printf("Title: %s\n", pull.Title)
 	color.New(color.FgBlue).Printf("Number: %d\n", pull.Number)
 	color.New(color.FgBlue).Printf("State: %s\n", pull.State)
 	color.New(color.FgBlue).Printf("URL: %s\n", pull.URL)
 	line()
-	fmt.Println(pull.Body)
+	fmt.Fprintln(f, pull.Body)
 
 	for _, comment := range comments {
-		fmt.Println()
+		fmt.Fprintln(f)
 		line()
 		color.New(color.FgWhite).Printf("From: %s\n", comment.User.Login)
 		color.New(color.FgWhite).Printf("Date: %s\n", comment.CreatedAt.Local())
 		line()
-		fmt.Println()
-		fmt.Println(comment.Body)
+		fmt.Fprintln(f)
+		fmt.Fprintln(f, comment.Body)
+	}
+
+	f.Close()
+	defer os.Remove(f.Name())
+
+	if err := runProgram("less", "-R", f.Name()); err != nil {
+		exitError(err)
 	}
 }
 
