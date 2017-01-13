@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"strings"
@@ -46,13 +47,18 @@ func main() {
 	}
 }
 
+func repo(myRepo string) octokat.Repo {
+	parts := strings.SplitN(myRepo, "/", 2)
+	return octokat.Repo{UserName: parts[0], Name: parts[1]}
+}
+
 func exitError(err error) {
-	fmt.Fprint(os.Stderr, err.Error())
+	fmt.Fprintln(os.Stderr, err.Error())
 	os.Exit(1)
 }
 
-func getPRs(client *octokat.Client, state string) ([]*octokat.PullRequest, error) {
-	prs, err := client.PullRequests(octokat.Repo{UserName: "docker", Name: "docker"}, nil)
+func getPRs(client *octokat.Client, repo octokat.Repo, state string) ([]*octokat.PullRequest, error) {
+	prs, err := client.PullRequests(repo, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -80,18 +86,27 @@ func line() {
 func singlePR(ctx *cli.Context) {
 	client := octokat.NewClient()
 
-	pull, err := client.PullRequest(octokat.Repo{UserName: "docker", Name: "docker"}, ctx.Args()[0], nil)
+	if len(ctx.Args()) != 2 {
+		exitError(errors.New("invalid arguments"))
+	}
+
+	args := ctx.Args()
+
+	myRepo := repo(args[0])
+
+	pull, err := client.PullRequest(myRepo, args[1], nil)
 	if err != nil {
 		exitError(err)
 	}
 
-	comments, err := client.Comments(octokat.Repo{UserName: "docker", Name: "docker"}, ctx.Args()[0], nil)
+	comments, err := client.Comments(myRepo, args[1], nil)
 	if err != nil {
 		exitError(err)
 	}
 
-	fmt.Printf("From: %s\n", pull.User.Login)
-	fmt.Printf("Title: %s\n", pull.Title)
+	color.New(color.FgBlue).Printf("From: %s\n", pull.User.Login)
+	color.New(color.FgBlue).Printf("Title: %s\n", pull.Title)
+	color.New(color.FgBlue).Printf("URL: %s\n", pull.URL)
 	line()
 	fmt.Println(pull.Body)
 
@@ -110,7 +125,14 @@ func listPRs(ctx *cli.Context) {
 	client := octokat.NewClient()
 	client.WithToken(os.Getenv("GITHUB_TOKEN"))
 
-	pulls, err := getPRs(client, "open")
+	if len(ctx.Args()) != 1 {
+		exitError(errors.New("invalid arguments"))
+	}
+
+	args := ctx.Args()
+	myRepo := repo(args[0])
+
+	pulls, err := getPRs(client, myRepo, "open")
 	if err != nil {
 		exitError(err)
 	}
@@ -126,8 +148,15 @@ func launchUI(ctx *cli.Context) {
 	list := termui.NewList()
 	client := octokat.NewClient()
 
+	args := ctx.Args()
+	if len(args) != 1 {
+		exitError(errors.New("invalid arguments"))
+	}
+
+	myRepo := repo(args[0])
+
 	fmt.Println("Loading pull requests, please wait...")
-	pulls, err := getPRs(client, "open")
+	pulls, err := getPRs(client, myRepo, "open")
 	if err != nil {
 		exitError(err)
 	}
