@@ -116,6 +116,8 @@ func singlePR(ctx *cli.Context) {
 
 	color.New(color.FgBlue).Printf("From: %s\n", pull.User.Login)
 	color.New(color.FgBlue).Printf("Title: %s\n", pull.Title)
+	color.New(color.FgBlue).Printf("Number: %d\n", pull.Number)
+	color.New(color.FgBlue).Printf("State: %s\n", pull.State)
 	color.New(color.FgBlue).Printf("URL: %s\n", pull.URL)
 	line()
 	fmt.Println(pull.Body)
