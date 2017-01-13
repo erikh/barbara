@@ -7,9 +7,37 @@
 	],
 	"Deps": [
 		{
+			"ImportPath": "github.com/Azure/go-ansiterm",
+			"Rev": "fa152c58bc15761d0200cb75fe958b89a9d4888e"
+		},
+		{
+			"ImportPath": "github.com/Azure/go-ansiterm/winterm",
+			"Rev": "fa152c58bc15761d0200cb75fe958b89a9d4888e"
+		},
+		{
+			"ImportPath": "github.com/Sirupsen/logrus",
+			"Comment": "v0.11.0-35-g61e43dc",
+			"Rev": "61e43dc76f7ee59a82bdf3d71033dc12bea4c77d"
+		},
+		{
 			"ImportPath": "github.com/crosbymichael/octokat",
 			"Comment": "0.3.0-73-g076a322",
 			"Rev": "076a32289ed52881ba23f353b3acc8510e5119ed"
+		},
+		{
+			"ImportPath": "github.com/docker/docker/pkg/term",
+			"Comment": "docs-v1.12.0-rc4-2016-07-15-4516-g1eafa0f",
+			"Rev": "1eafa0f706931a0f3f73c756df3fa50639eae7a2"
+		},
+		{
+			"ImportPath": "github.com/docker/docker/pkg/term/windows",
+			"Comment": "docs-v1.12.0-rc4-2016-07-15-4516-g1eafa0f",
+			"Rev": "1eafa0f706931a0f3f73c756df3fa50639eae7a2"
+		},
+		{
+			"ImportPath": "github.com/fatih/color",
+			"Comment": "v1.2-4-g42c364b",
+			"Rev": "42c364ba490082e4815b5222728711b3440603eb"
 		},
 		{
 			"ImportPath": "github.com/fhs/go-netrc/netrc",
@@ -43,8 +71,22 @@
 			"Rev": "307ae868f90f4ee1b73ebe4596e0394237dacce8"
 		},
 		{
+			"ImportPath": "github.com/kr/pty",
+			"Comment": "release.r56-35-gce7fa45",
+			"Rev": "ce7fa45920dc37a92de8377972e52bc55ffa8d57"
+		},
+		{
 			"ImportPath": "github.com/maruel/panicparse/stack",
 			"Rev": "ad661195ed0e88491e0f14be6613304e3b1141d6"
+		},
+		{
+			"ImportPath": "github.com/mattn/go-colorable",
+			"Comment": "v0.0.6-9-gd228849",
+			"Rev": "d228849504861217f796da67fae4f6e347643f15"
+		},
+		{
+			"ImportPath": "github.com/mattn/go-isatty",
+			"Rev": "30a891c33c7cde7b02a981314b4228ec99380cca"
 		},
 		{
 			"ImportPath": "github.com/mattn/go-runewidth",
@@ -68,6 +110,10 @@
 			"ImportPath": "github.com/urfave/cli",
 			"Comment": "v1.19.1-4-g8ef3805",
 			"Rev": "8ef3805c9de2519805c3f060524b695bba2cd715"
+		},
+		{
+			"ImportPath": "golang.org/x/sys/unix",
+			"Rev": "d75a52659825e75fff6158388dddc6a5b04f9ba5"
 		}
 	]
 }
