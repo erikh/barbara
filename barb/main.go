@@ -10,6 +10,12 @@ func main() {
 	app := cli.NewApp()
 	app.Commands = []cli.Command{
 		{
+			Name:        "watch-hooks",
+			Description: "Watch for hooks (like CI) to complete for a PR",
+			Usage:       "Watch for hooks (like CI) to complete for a PR",
+			Action:      watch,
+		},
+		{
 			Name:        "get",
 			Description: "Get state/comments for an PR",
 			Usage:       "Get state/comments for an PR",
