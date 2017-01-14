@@ -26,6 +26,26 @@ func getPRs(client *octokat.Client, repo octokat.Repo, state, direction, sortBy 
 	return newPulls, nil
 }
 
+func mergePR(ctx *cli.Context) {
+	client := getClient()
+	args := ctx.Args()
+	if len(args) != 1 {
+		exitError(errors.New("invalid arguments"))
+	}
+
+	myRepo, err := repo()
+	if err != nil {
+		exitError(err)
+	}
+
+	_, err = client.MergePullRequest(myRepo, args[0], nil)
+	if err != nil {
+		exitError(err)
+	}
+
+	fmt.Printf("PR #%s successfully merged!\n", args[0])
+}
+
 func createPR(ctx *cli.Context) {
 	client := getClient()
 
@@ -70,7 +90,7 @@ func createPR(ctx *cli.Context) {
 		exitError(err)
 	}
 
-	fmt.Printf("PR %d created!", pr.Number)
+	fmt.Printf("PR %d created!\n", pr.Number)
 }
 
 func replyPR(ctx *cli.Context) {
@@ -106,7 +126,7 @@ func replyPR(ctx *cli.Context) {
 		exitError(err)
 	}
 
-	fmt.Printf("Comment on ticket %s posted!\n", args[1])
+	fmt.Printf("Comment on ticket %s posted!\n", args[0])
 }
 
 func singlePR(ctx *cli.Context) {

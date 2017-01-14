@@ -65,6 +65,12 @@ func main() {
 					},
 					Action: createPR,
 				},
+				{
+					Name:        "merge",
+					Description: "Merge a PR",
+					Usage:       "Merge a PR",
+					Action:      mergePR,
+				},
 			},
 		},
 	}
