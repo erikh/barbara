@@ -39,7 +39,7 @@ func watch(ctx *cli.Context) {
 			os.Exit(0)
 		}
 
-		time.Sleep(1 * time.Second)
+		time.Sleep(30 * time.Second)
 	}
 }
 
