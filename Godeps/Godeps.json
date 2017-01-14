@@ -1,0 +1,119 @@
+{
+	"ImportPath": "github.com/erikh/barbara",
+	"GoVersion": "go1.7",
+	"GodepVersion": "v76",
+	"Packages": [
+		"./..."
+	],
+	"Deps": [
+		{
+			"ImportPath": "github.com/Azure/go-ansiterm",
+			"Rev": "fa152c58bc15761d0200cb75fe958b89a9d4888e"
+		},
+		{
+			"ImportPath": "github.com/Azure/go-ansiterm/winterm",
+			"Rev": "fa152c58bc15761d0200cb75fe958b89a9d4888e"
+		},
+		{
+			"ImportPath": "github.com/Sirupsen/logrus",
+			"Comment": "v0.11.0-35-g61e43dc",
+			"Rev": "61e43dc76f7ee59a82bdf3d71033dc12bea4c77d"
+		},
+		{
+			"ImportPath": "github.com/crosbymichael/octokat",
+			"Comment": "0.3.0-73-g076a322",
+			"Rev": "076a32289ed52881ba23f353b3acc8510e5119ed"
+		},
+		{
+			"ImportPath": "github.com/docker/docker/pkg/term",
+			"Comment": "docs-v1.12.0-rc4-2016-07-15-4516-g1eafa0f",
+			"Rev": "1eafa0f706931a0f3f73c756df3fa50639eae7a2"
+		},
+		{
+			"ImportPath": "github.com/docker/docker/pkg/term/windows",
+			"Comment": "docs-v1.12.0-rc4-2016-07-15-4516-g1eafa0f",
+			"Rev": "1eafa0f706931a0f3f73c756df3fa50639eae7a2"
+		},
+		{
+			"ImportPath": "github.com/fatih/color",
+			"Comment": "v1.2-4-g42c364b",
+			"Rev": "42c364ba490082e4815b5222728711b3440603eb"
+		},
+		{
+			"ImportPath": "github.com/fhs/go-netrc/netrc",
+			"Comment": "v1.0.0",
+			"Rev": "4ffed54ee5c32ebfb1b8c7c72fc90bb08dc3ff43"
+		},
+		{
+			"ImportPath": "github.com/gizak/termui",
+			"Comment": "v2.1.1-9-gf63e0cd",
+			"Rev": "f63e0cdd3f66ccb5fd4a906a31576b4b67904001"
+		},
+		{
+			"ImportPath": "github.com/jingweno/go-sawyer",
+			"Rev": "1999ae5763d678f3ce1112cf1fda7c7e9cf2aadf"
+		},
+		{
+			"ImportPath": "github.com/jingweno/go-sawyer/hypermedia",
+			"Rev": "1999ae5763d678f3ce1112cf1fda7c7e9cf2aadf"
+		},
+		{
+			"ImportPath": "github.com/jingweno/go-sawyer/mediaheader",
+			"Rev": "1999ae5763d678f3ce1112cf1fda7c7e9cf2aadf"
+		},
+		{
+			"ImportPath": "github.com/jingweno/go-sawyer/mediatype",
+			"Rev": "1999ae5763d678f3ce1112cf1fda7c7e9cf2aadf"
+		},
+		{
+			"ImportPath": "github.com/jtacoma/uritemplates",
+			"Comment": "v1.0.0",
+			"Rev": "307ae868f90f4ee1b73ebe4596e0394237dacce8"
+		},
+		{
+			"ImportPath": "github.com/kr/pty",
+			"Comment": "release.r56-35-gce7fa45",
+			"Rev": "ce7fa45920dc37a92de8377972e52bc55ffa8d57"
+		},
+		{
+			"ImportPath": "github.com/maruel/panicparse/stack",
+			"Rev": "ad661195ed0e88491e0f14be6613304e3b1141d6"
+		},
+		{
+			"ImportPath": "github.com/mattn/go-colorable",
+			"Comment": "v0.0.6-9-gd228849",
+			"Rev": "d228849504861217f796da67fae4f6e347643f15"
+		},
+		{
+			"ImportPath": "github.com/mattn/go-isatty",
+			"Rev": "30a891c33c7cde7b02a981314b4228ec99380cca"
+		},
+		{
+			"ImportPath": "github.com/mattn/go-runewidth",
+			"Comment": "v0.0.1-10-g737072b",
+			"Rev": "737072b4e32b7a5018b4a7125da8d12de90e8045"
+		},
+		{
+			"ImportPath": "github.com/mitchellh/go-wordwrap",
+			"Rev": "ad45545899c7b13c020ea92b2072220eefad42b8"
+		},
+		{
+			"ImportPath": "github.com/nsf/termbox-go",
+			"Rev": "abe82ce5fb7a42fbd6784a5ceb71aff977e09ed8"
+		},
+		{
+			"ImportPath": "github.com/octokit/go-octokit/octokit",
+			"Comment": "v0.4.0-364-g812e91d",
+			"Rev": "812e91dfbd64051c1ec72c48feda0278727e8a4e"
+		},
+		{
+			"ImportPath": "github.com/urfave/cli",
+			"Comment": "v1.19.1-4-g8ef3805",
+			"Rev": "8ef3805c9de2519805c3f060524b695bba2cd715"
+		},
+		{
+			"ImportPath": "golang.org/x/sys/unix",
+			"Rev": "d75a52659825e75fff6158388dddc6a5b04f9ba5"
+		}
+	]
+}
