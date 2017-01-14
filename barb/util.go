@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"io"
 	"os"
 	"os/exec"
@@ -14,7 +15,12 @@ import (
 	"github.com/kr/pty"
 )
 
-var urlRegexp = regexp.MustCompile(`(https://|git@)github.com[:/]([^\s]+)`)
+var urlRegexp = regexp.MustCompile(`(https://|git@)github.com[:/](\S+)`)
+
+func exitError(err error) {
+	fmt.Fprintln(os.Stderr, err.Error())
+	os.Exit(1)
+}
 
 func repo() (octokat.Repo, error) {
 	repo := octokat.Repo{}
@@ -29,7 +35,6 @@ func repo() (octokat.Repo, error) {
 	}
 
 	parts := strings.Split(match[2], "/")
-
 	return octokat.Repo{Name: parts[1], UserName: parts[0]}, nil
 }
 
