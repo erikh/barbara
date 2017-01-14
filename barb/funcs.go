@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"strconv"
 
 	"github.com/fatih/color"
 	"github.com/urfave/cli"
@@ -61,12 +60,7 @@ func get(ctx *cli.Context) {
 		exitError(err)
 	}
 
-	i, err := strconv.Atoi(args[0])
-	if err != nil {
-		exitError(err)
-	}
-
-	issue, err := client.Issue(myRepo, i, nil)
+	pr, err := client.PullRequest(myRepo, args[0], nil)
 	if err != nil {
 		exitError(err)
 	}
@@ -84,13 +78,32 @@ func get(ctx *cli.Context) {
 	color.Output = f
 
 	line()
-	color.New(color.FgBlue).Printf("From: %s\n", issue.User.Login)
-	color.New(color.FgBlue).Printf("Title: %s\n", issue.Title)
-	color.New(color.FgBlue).Printf("Number: %d\n", issue.Number)
-	color.New(color.FgBlue).Printf("State: %s\n", issue.State)
-	color.New(color.FgBlue).Printf("URL: %s\n", issue.URL)
+	color.New(color.FgBlue).Printf("From: %s\n", pr.User.Login)
+	color.New(color.FgBlue).Printf("Title: %s\n", pr.Title)
+	color.New(color.FgBlue).Printf("Number: %d\n", pr.Number)
+	color.New(color.FgBlue).Printf("State: %s\n", pr.State)
+	color.New(color.FgBlue).Printf("URL: %s\n", pr.URL)
+
+	status, err := client.CombinedStatus(myRepo, pr.Head.Sha, nil)
+	if err != nil {
+		exitError(err)
+	}
+
+	stateColor := color.New()
+	switch status.State {
+	case "success":
+		stateColor = color.New(color.FgGreen)
+	case "pending":
+		stateColor = color.New(color.FgWhite)
+	case "error":
+		stateColor = color.New(color.FgYellow)
+	case "failure":
+		stateColor = color.New(color.FgRed)
+	}
+	stateColor.Println("State:", status.State)
+
 	line()
-	fmt.Fprintln(f, issue.Body)
+	fmt.Fprintln(f, pr.Body)
 
 	for _, comment := range comments {
 		fmt.Fprintln(f)
