@@ -90,7 +90,7 @@ func createPR(ctx *cli.Context) {
 		exitError(err)
 	}
 
-	fmt.Printf("PR %d created!", pr.Number)
+	fmt.Printf("PR %d created!\n", pr.Number)
 }
 
 func replyPR(ctx *cli.Context) {
@@ -126,7 +126,7 @@ func replyPR(ctx *cli.Context) {
 		exitError(err)
 	}
 
-	fmt.Printf("Comment on ticket %s posted!\n", args[1])
+	fmt.Printf("Comment on ticket %s posted!\n", args[0])
 }
 
 func singlePR(ctx *cli.Context) {
