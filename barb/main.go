@@ -47,6 +47,11 @@ func main() {
 							Usage: "Direction of sort",
 							Value: "desc",
 						},
+						cli.IntFlag{
+							Name:  "m, max-pages",
+							Usage: "Maximum number of list pages to fetch",
+							Value: 5,
+						},
 					},
 				},
 				{

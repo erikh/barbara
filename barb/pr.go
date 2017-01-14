@@ -12,16 +12,29 @@ import (
 	"github.com/urfave/cli"
 )
 
-func getPRs(client *octokat.Client, repo octokat.Repo, state, direction, sortBy string) ([]*octokat.PullRequest, error) {
-	prs, err := client.PullRequests(repo, &octokat.Options{QueryParams: map[string]string{"state": state, "direction": direction, "sort": sortBy}})
-	if err != nil {
-		return nil, err
-	}
-
+func getPRs(client *octokat.Client, ctx *cli.Context, repo octokat.Repo) ([]*octokat.PullRequest, error) {
 	newPulls := []*octokat.PullRequest{}
 
-	for _, pull := range prs {
-		newPulls = append(newPulls, pull)
+	for page := 1; page < ctx.Int("max-pages"); page++ {
+		params := map[string]string{
+			"state":     ctx.String("state"),
+			"direction": ctx.String("direction"),
+			"sort":      ctx.String("sort-by"),
+			"page":      fmt.Sprintf("%d", page),
+		}
+
+		prs, err := client.PullRequests(repo, &octokat.Options{QueryParams: params})
+		if err != nil {
+			return nil, err
+		}
+
+		if len(prs) == 0 {
+			break
+		}
+
+		for _, pull := range prs {
+			newPulls = append(newPulls, pull)
+		}
 	}
 
 	return newPulls, nil
@@ -117,6 +130,7 @@ func createPR(ctx *cli.Context) {
 		exitError(err)
 	}
 	f.Close()
+	defer os.Remove(f.Name())
 
 	if err := runProgram(os.Getenv("EDITOR"), f.Name()); err != nil {
 		exitError(err)
@@ -154,7 +168,7 @@ func listPRs(ctx *cli.Context) {
 		exitError(err)
 	}
 
-	pulls, err := getPRs(client, myRepo, ctx.String("state"), ctx.String("direction"), ctx.String("sort-by"))
+	pulls, err := getPRs(client, ctx, myRepo)
 	if err != nil {
 		exitError(err)
 	}
