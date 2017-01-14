@@ -11,8 +11,8 @@ func main() {
 	app.Commands = []cli.Command{
 		{
 			Name:        "get",
-			Description: "Get comments for an issue",
-			Usage:       "Get comments for an issue",
+			Description: "Get state/comments for an PR",
+			Usage:       "Get state/comments for an PR",
 			Action:      get,
 		},
 		{
