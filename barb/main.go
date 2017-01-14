@@ -71,6 +71,12 @@ func main() {
 					Usage:       "Merge a PR",
 					Action:      mergePR,
 				},
+				{
+					Name:        "diff",
+					Description: "Get the diff for a PR",
+					Usage:       "Get the diff for a PR",
+					Action:      diffPR,
+				},
 			},
 		},
 	}

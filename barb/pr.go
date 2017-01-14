@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"strings"
 
 	"github.com/crosbymichael/octokat"
 	"github.com/fatih/color"
@@ -24,6 +25,57 @@ func getPRs(client *octokat.Client, repo octokat.Repo, state, direction, sortBy 
 	}
 
 	return newPulls, nil
+}
+
+func diffPR(ctx *cli.Context) {
+	client := getClient()
+
+	args := ctx.Args()
+	if len(args) != 1 {
+		exitError(errors.New("invalid arguments"))
+	}
+
+	myRepo, err := repo()
+	if err != nil {
+		exitError(err)
+	}
+
+	prfs, err := client.PullRequestFiles(myRepo, args[0], nil)
+	if err != nil {
+		exitError(err)
+	}
+
+	f, err := ioutil.TempFile("", "barbara-edit")
+	if err != nil {
+		exitError(err)
+	}
+	defer os.Remove(f.Name())
+
+	color.Output = f
+
+	for _, file := range prfs {
+		line()
+		fmt.Fprintln(f, file.FileName)
+		line()
+
+		for _, line := range strings.Split(file.Patch, "\n") {
+			switch line[0] {
+			case '+':
+				color.New(color.FgGreen).Println(line)
+			case '-':
+				color.New(color.FgRed).Println(line)
+			case '!':
+				color.New(color.FgYellow).Println(line)
+			default:
+				fmt.Fprintln(f, line)
+			}
+		}
+	}
+
+	f.Close()
+	if err := runProgram("less", "-R", f.Name()); err != nil {
+		exitError(err)
+	}
 }
 
 func mergePR(ctx *cli.Context) {
