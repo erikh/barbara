@@ -1,8 +1,8 @@
 package main
 
 import (
+	"errors"
 	"io"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"regexp"
@@ -14,36 +14,23 @@ import (
 	"github.com/kr/pty"
 )
 
-var urlRegexp = regexp.MustCompile(`\s*url\s*=\s*(https://|git@)github.com[:/]([^\s]+)`)
+var urlRegexp = regexp.MustCompile(`(https://|git@)github.com[:/]([^\s]+)`)
 
 func repo() (octokat.Repo, error) {
 	repo := octokat.Repo{}
-	content, err := ioutil.ReadFile(".git/config")
+	content, err := exec.Command("git", "config", "--get", "remote.origin.url").CombinedOutput()
 	if err != nil {
 		return repo, err
 	}
 
-	var origin bool
-
-	for _, line := range strings.Split(string(content), "\n") {
-		if line == `[remote "origin"]` {
-			origin = true
-			continue
-		}
-
-		if origin && urlRegexp.MatchString(line) {
-			match := urlRegexp.FindStringSubmatch(line)
-			if len(match) != 3 {
-				continue
-			}
-
-			parts := strings.Split(match[2], "/")
-
-			return octokat.Repo{Name: parts[1], UserName: parts[0]}, nil
-		}
+	match := urlRegexp.FindStringSubmatch(string(content))
+	if len(match) != 3 {
+		return repo, errors.New("invalid url in origin remote")
 	}
 
-	return repo, nil
+	parts := strings.Split(match[2], "/")
+
+	return octokat.Repo{Name: parts[1], UserName: parts[0]}, nil
 }
 
 func line() {

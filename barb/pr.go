@@ -136,9 +136,23 @@ func listPRs(ctx *cli.Context) {
 		exitError(err)
 	}
 
+	f, err := ioutil.TempFile("", "barbara-edit")
+	if err != nil {
+		exitError(err)
+	}
+
+	color.Output = f
+
 	for _, pull := range pulls {
 		color.New(color.FgWhite).Printf("[ %d ] ", pull.Number)
 		color.New(color.FgBlue).Printf("(%s) ", pull.User.Login)
-		fmt.Printf("%s\n", pull.Title)
+		fmt.Fprintf(f, "%s\n", pull.Title)
+	}
+
+	f.Close()
+	defer os.Remove(f.Name())
+
+	if err := runProgram("less", "-R", f.Name()); err != nil {
+		exitError(err)
 	}
 }
