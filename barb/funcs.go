@@ -81,7 +81,6 @@ func get(ctx *cli.Context) {
 	color.New(color.FgBlue).Printf("From: %s\n", pr.User.Login)
 	color.New(color.FgBlue).Printf("Title: %s\n", pr.Title)
 	color.New(color.FgBlue).Printf("Number: %d\n", pr.Number)
-	color.New(color.FgBlue).Printf("State: %s\n", pr.State)
 	color.New(color.FgBlue).Printf("URL: %s\n", pr.URL)
 
 	status, err := client.CombinedStatus(myRepo, pr.Head.Sha, nil)
@@ -90,6 +89,15 @@ func get(ctx *cli.Context) {
 	}
 
 	stateColor := color.New()
+	switch pr.State {
+	case "open":
+		stateColor = color.New(color.FgGreen)
+	case "closed":
+		stateColor = color.New(color.FgRed)
+	}
+
+	stateColor.Printf("State: %s\n", pr.State)
+
 	switch status.State {
 	case "success":
 		stateColor = color.New(color.FgGreen)
@@ -100,7 +108,7 @@ func get(ctx *cli.Context) {
 	case "failure":
 		stateColor = color.New(color.FgRed)
 	}
-	stateColor.Println("State:", status.State)
+	stateColor.Println("Hooks State:", status.State)
 
 	line()
 	fmt.Fprintln(f, pr.Body)
