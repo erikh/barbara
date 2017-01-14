@@ -28,7 +28,7 @@ func getPRs(client *octokat.Client, repo octokat.Repo, state, direction, sortBy 
 
 func replyPR(ctx *cli.Context) {
 	client := getClient()
-	if len(ctx.Args()) != 2 {
+	if len(ctx.Args()) != 1 {
 		exitError(errors.New("invalid arguments"))
 	}
 
@@ -54,7 +54,7 @@ func replyPR(ctx *cli.Context) {
 		exitError(err)
 	}
 
-	_, err = client.AddComment(myRepo, args[1], string(content))
+	_, err = client.AddComment(myRepo, args[0], string(content))
 	if err != nil {
 		exitError(err)
 	}
