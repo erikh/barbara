@@ -26,6 +26,53 @@ func getPRs(client *octokat.Client, repo octokat.Repo, state, direction, sortBy 
 	return newPulls, nil
 }
 
+func createPR(ctx *cli.Context) {
+	client := getClient()
+
+	args := ctx.Args()
+
+	if len(args) != 1 || ctx.String("title") == "" {
+		exitError(errors.New("invalid arguments"))
+	}
+
+	myRepo, err := repo()
+	if err != nil {
+		exitError(err)
+	}
+
+	f, err := ioutil.TempFile("", "barbara-edit")
+	if err != nil {
+		exitError(err)
+	}
+	f.Close()
+
+	if err := runProgram(os.Getenv("EDITOR"), f.Name()); err != nil {
+		exitError(err)
+	}
+
+	content, err := ioutil.ReadFile(f.Name())
+	if err != nil {
+		exitError(err)
+	}
+
+	fmt.Println(args[0])
+
+	pr, err := client.CreatePullRequest(myRepo, &octokat.Options{
+		Params: map[string]string{
+			"title": ctx.String("title"),
+			"body":  string(content),
+			"base":  ctx.String("base"),
+			"head":  args[0],
+		},
+	})
+
+	if err != nil {
+		exitError(err)
+	}
+
+	fmt.Printf("PR %d created!", pr.Number)
+}
+
 func replyPR(ctx *cli.Context) {
 	client := getClient()
 	if len(ctx.Args()) != 1 {

@@ -50,6 +50,21 @@ func main() {
 					Usage:       "Reply to a a ticket",
 					Action:      replyPR,
 				},
+				{
+					Name:        "create",
+					Description: "Create a PR",
+					Usage:       "Create a PR",
+					Flags: []cli.Flag{
+						cli.StringFlag{
+							Name: "t, title",
+						},
+						cli.StringFlag{
+							Name:  "b, base",
+							Value: "master",
+						},
+					},
+					Action: createPR,
+				},
 			},
 		},
 	}
