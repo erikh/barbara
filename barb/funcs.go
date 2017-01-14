@@ -5,10 +5,43 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"time"
 
 	"github.com/fatih/color"
 	"github.com/urfave/cli"
 )
+
+func watch(ctx *cli.Context) {
+	client := getClient()
+
+	args := ctx.Args()
+	if len(args) != 1 {
+		exitError(errors.New("invalid arguments"))
+	}
+
+	myRepo, err := repo()
+	if err != nil {
+		exitError(err)
+	}
+
+	for {
+		pr, err := client.PullRequest(myRepo, args[0], nil)
+		if err != nil {
+			exitError(err)
+		}
+
+		status, err := client.CombinedStatus(myRepo, pr.Head.Sha, nil)
+		if err != nil {
+			exitError(err)
+		}
+
+		if status.State != "pending" {
+			os.Exit(0)
+		}
+
+		time.Sleep(1 * time.Second)
+	}
+}
 
 func reply(ctx *cli.Context) {
 	client := getClient()
