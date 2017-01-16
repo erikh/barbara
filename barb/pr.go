@@ -141,7 +141,9 @@ func createPR(ctx *cli.Context) {
 		exitError(err)
 	}
 
-	fmt.Println(args[0])
+	if len(content) == 0 {
+		exitError(errors.New("prs must have content"))
+	}
 
 	pr, err := client.CreatePullRequest(myRepo, &octokat.Options{
 		Params: map[string]string{
