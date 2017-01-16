@@ -15,7 +15,7 @@ func watch(ctx *cli.Context) {
 	client := getClient()
 
 	args := ctx.Args()
-	if len(args) != 1 {
+	if len(args) < 1 {
 		exitError(errors.New("invalid arguments"))
 	}
 
@@ -25,18 +25,21 @@ func watch(ctx *cli.Context) {
 	}
 
 	for {
-		pr, err := client.PullRequest(myRepo, args[0], nil)
-		if err != nil {
-			exitError(err)
-		}
+		for _, num := range args {
+			pr, err := client.PullRequest(myRepo, num, nil)
+			if err != nil {
+				exitError(err)
+			}
 
-		status, err := client.CombinedStatus(myRepo, pr.Head.Sha, nil)
-		if err != nil {
-			exitError(err)
-		}
+			status, err := client.CombinedStatus(myRepo, pr.Head.Sha, nil)
+			if err != nil {
+				exitError(err)
+			}
 
-		if status.State != "pending" {
-			os.Exit(0)
+			if status.State != "pending" {
+				fmt.Printf("Status for %s changed to state %q\n", num, status.State)
+				os.Exit(0)
+			}
 		}
 
 		time.Sleep(30 * time.Second)
