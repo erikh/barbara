@@ -74,6 +74,10 @@ func reply(ctx *cli.Context) {
 		exitError(err)
 	}
 
+	if len(content) == 0 {
+		exitError(errors.New("no content to post"))
+	}
+
 	_, err = client.AddComment(myRepo, args[0], string(content))
 	if err != nil {
 		exitError(err)
