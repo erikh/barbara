@@ -38,7 +38,12 @@ func watch(ctx *cli.Context) {
 
 			if status.State != "pending" {
 				fmt.Printf("Status for %s changed to state %q\n", num, status.State)
-				os.Exit(0)
+
+				if status.State == "success" {
+					os.Exit(0)
+				}
+
+				os.Exit(1)
 			}
 		}
 
