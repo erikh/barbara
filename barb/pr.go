@@ -185,7 +185,28 @@ func listPRs(ctx *cli.Context) {
 	for _, pull := range pulls {
 		color.New(color.FgWhite).Printf("[ %d ] ", pull.Number)
 		color.New(color.FgBlue).Printf("(%s) ", pull.User.Login)
-		fmt.Fprintf(f, "%s\n", pull.Title)
+		fmt.Fprintf(f, "%s", pull.Title)
+
+		status, err := client.CombinedStatus(myRepo, pull.Head.Sha, nil)
+		if err != nil {
+			exitError(err)
+		}
+
+		var stateColor *color.Color
+
+		switch status.State {
+		case "success":
+			stateColor = color.New(color.FgGreen)
+		case "pending":
+			stateColor = color.New(color.FgWhite)
+		case "error":
+			stateColor = color.New(color.FgYellow)
+		case "failure":
+			stateColor = color.New(color.FgRed)
+		}
+
+		stateColor.Printf(" [ %s ]", status.State)
+		color.New(color.Reset).Print("\n")
 	}
 
 	f.Close()
