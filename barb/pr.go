@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"os/exec"
 	"strings"
 
 	"github.com/crosbymichael/octokat"
@@ -116,8 +117,30 @@ func createPR(ctx *cli.Context) {
 
 	args := ctx.Args()
 
-	if len(args) != 1 || ctx.String("title") == "" {
+	git, err := exec.LookPath("git")
+	if err != nil {
+		exitError(err)
+	}
+
+	out, err := exec.Command(git, "log", "-n", "1").Output()
+	if err != nil {
+		exitError(err)
+	}
+
+	if len(args) != 1 {
 		exitError(errors.New("invalid arguments"))
+	}
+
+	lines := strings.Split(string(out), "\n")
+	trimmed := []string{}
+
+	for _, l := range lines {
+		trimmed = append(trimmed, strings.TrimSpace(l))
+	}
+
+	title := ctx.String("title")
+	if title == "" {
+		title = trimmed[4]
 	}
 
 	myRepo, err := repo()
@@ -129,6 +152,7 @@ func createPR(ctx *cli.Context) {
 	if err != nil {
 		exitError(err)
 	}
+	f.Write([]byte(strings.Join(trimmed[6:], "\n")))
 	f.Close()
 	defer os.Remove(f.Name())
 
@@ -147,7 +171,7 @@ func createPR(ctx *cli.Context) {
 
 	pr, err := client.CreatePullRequest(myRepo, &octokat.Options{
 		Params: map[string]string{
-			"title": ctx.String("title"),
+			"title": title,
 			"body":  string(content),
 			"base":  ctx.String("base"),
 			"head":  args[0],
