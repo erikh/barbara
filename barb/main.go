@@ -17,6 +17,12 @@ func main() {
 			Usage:     "Subcommand trampoline for all issues",
 			Subcommands: []cli.Command{
 				{
+					Name:      "get",
+					Usage:     "get info on a single issue",
+					ArgsUsage: "[id]",
+					Action:    getIssue,
+				},
+				{
 					Name:      "list",
 					Usage:     "list issues",
 					ArgsUsage: "",
