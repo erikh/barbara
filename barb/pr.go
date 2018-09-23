@@ -219,7 +219,7 @@ func createPR(ctx *cli.Context) {
 		exitError(err)
 	}
 
-	fmt.Printf("PR %d created!\n", pr.Number)
+	fmt.Printf("PR %d created!\n", pr.GetNumber())
 }
 
 func listPRs(ctx *cli.Context) {
