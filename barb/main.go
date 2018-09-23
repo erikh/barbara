@@ -23,6 +23,12 @@ func main() {
 					Action:    getIssue,
 				},
 				{
+					Name:      "reply",
+					Usage:     "Reply to an issue. Spawns $EDITOR",
+					ArgsUsage: "[id]",
+					Action:    replyIssue,
+				},
+				{
 					Name:      "list",
 					Usage:     "list issues",
 					ArgsUsage: "",

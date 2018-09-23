@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"strconv"
 
@@ -35,17 +36,21 @@ func getIssue(ctx *cli.Context) {
 	}
 
 	allComments := []*github.IssueComment{}
-	comments := []*github.IssueComment{}
+	var i int
 
-	for i := 0; len(comments) != 0; i++ {
-		comments, _, err = client.Issues.ListComments(context.Background(), owner, repo, num, &github.IssueListCommentsOptions{
+	for {
+		i++
+		comments, _, err := client.Issues.ListComments(context.Background(), owner, repo, num, &github.IssueListCommentsOptions{
 			ListOptions: github.ListOptions{
-				Page:    i,
-				PerPage: 100,
+				Page: i,
 			},
 		})
 		if err != nil {
 			exitError(err)
+		}
+
+		if len(comments) == 0 {
+			break
 		}
 
 		allComments = append(allComments, comments...)
@@ -73,7 +78,7 @@ func getIssue(ctx *cli.Context) {
 	line()
 	fmt.Println(issue.GetBody())
 
-	for _, comment := range comments {
+	for _, comment := range allComments {
 		fmt.Println()
 		line()
 		color.New(color.FgWhite).Printf("From: %s\n", comment.User.GetLogin())
@@ -124,4 +129,47 @@ func listIssue(ctx *cli.Context) {
 		color.New(color.FgBlue).Printf("(%s) ", issue.User.GetLogin())
 		fmt.Fprintf(os.Stdout, "%s\n", issue.GetTitle())
 	}
+}
+
+func replyIssue(ctx *cli.Context) {
+	args := ctx.Args()
+
+	if len(args) != 1 {
+		exitError(errors.New("invalid arguments"))
+	}
+
+	client := getClient()
+
+	owner, repo, err := repo()
+	if err != nil {
+		exitError(err)
+	}
+
+	num, err := strconv.Atoi(args[0])
+	if err != nil {
+		exitError(err)
+	}
+
+	f, err := ioutil.TempFile("", "barb-")
+	if err != nil {
+		exitError(err)
+	}
+	f.Close()
+	defer os.Remove(f.Name())
+
+	if err := runProgram(os.Getenv("EDITOR"), f.Name()); err != nil {
+		exitError(err)
+	}
+
+	body, err := ioutil.ReadFile(f.Name())
+	if err != nil {
+		exitError(err)
+	}
+
+	_, _, err = client.Issues.CreateComment(context.Background(), owner, repo, num, &github.IssueComment{Body: github.String(string(body))})
+	if err != nil {
+		exitError(err)
+	}
+
+	fmt.Println("Comment posted!")
 }
