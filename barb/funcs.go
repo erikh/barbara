@@ -63,7 +63,11 @@ func watch(ctx *cli.Context) {
 	for params := range doneChan {
 		i++
 		fmt.Printf("Finished: %v (%v)\n", params[0], params[1])
-		fmt.Printf("Remaining: %d\n", len(args)-i)
+		fmt.Printf("Remaining: %d\n", i-len(args))
+
+		if i == len(args) {
+			return
+		}
 	}
 }
 
