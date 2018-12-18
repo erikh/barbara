@@ -68,18 +68,15 @@ func diffPR(ctx *cli.Context) {
 	}
 
 	commits, _, err := client.Repositories.CompareCommits(context.Background(), owner, repo, pr.Base.GetSHA(), pr.Head.GetSHA())
-
-	f, err := ioutil.TempFile("", "barbara-edit")
 	if err != nil {
 		exitError(err)
 	}
-	defer os.Remove(f.Name())
 
-	color.Output = f
+	color.Output = os.Stdout
 
 	for _, file := range commits.Files {
 		line()
-		fmt.Fprintln(f, file.GetFilename())
+		fmt.Fprintln(color.Output, file.GetFilename())
 		line()
 
 		for _, line := range strings.Split(file.GetPatch(), "\n") {
@@ -91,12 +88,10 @@ func diffPR(ctx *cli.Context) {
 			case '!':
 				color.New(color.FgYellow).Println(line)
 			default:
-				fmt.Fprintln(f, line)
+				fmt.Fprintln(color.Output, line)
 			}
 		}
 	}
-
-	f.Close()
 }
 
 func closePR(ctx *cli.Context) {
