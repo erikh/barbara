@@ -173,3 +173,41 @@ func replyIssue(ctx *cli.Context) {
 
 	fmt.Println("Comment posted!")
 }
+
+func reopenIssue(ctx *cli.Context) {
+	editIssue(ctx, "opened")
+}
+
+func closeIssue(ctx *cli.Context) {
+	editIssue(ctx, "closed")
+}
+
+func editIssue(ctx *cli.Context, state string) {
+	args := ctx.Args()
+
+	if len(args) != 1 {
+		exitError(errors.New("invalid arguments"))
+	}
+
+	client := getClient()
+
+	num, err := strconv.Atoi(args[0])
+	if err != nil {
+		exitError(err)
+	}
+
+	owner, repo, err := repo()
+	if err != nil {
+		exitError(err)
+	}
+
+	_, _, err = client.Issues.Edit(context.Background(), owner, repo, num, &github.IssueRequest{
+		State: github.String(state),
+	})
+
+	if err != nil {
+		exitError(err)
+	}
+
+	fmt.Println("Issue", num, state+"!")
+}
